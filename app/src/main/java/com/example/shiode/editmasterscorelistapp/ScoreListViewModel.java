@@ -1,5 +1,6 @@
 package com.example.shiode.editmasterscorelistapp;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableField;
@@ -17,7 +18,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ScoreListViewModel extends ViewModel {
-    public ObservableField<ScoreListAdapter> adapter = new ObservableField<>(new ScoreListAdapter());
+    public MutableLiveData<List<Score>> scoreList = new MutableLiveData<>();
     public ObservableField<Boolean> isLoading = new ObservableField<>(true);
     public ObservableField<Boolean> isError = new ObservableField<>(false);
 
@@ -32,8 +33,7 @@ public class ScoreListViewModel extends ViewModel {
                     isError.set(true);
                     return;
                 }
-                List<Score> scoreList = response.body().getData();
-                adapter.get().setList(scoreList);
+                scoreList.setValue(response.body().getData());
             }
 
             @Override
