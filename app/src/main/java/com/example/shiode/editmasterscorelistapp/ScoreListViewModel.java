@@ -1,7 +1,12 @@
 package com.example.shiode.editmasterscorelistapp;
 
 import android.arch.lifecycle.ViewModel;
+import android.databinding.BindingAdapter;
 import android.databinding.ObservableField;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -39,4 +44,16 @@ public class ScoreListViewModel extends ViewModel {
 
         });
     }
+
+    @BindingAdapter("bind:youtube_image")
+    public static void setYoutubeImage(ImageView view, String videoId) {
+        String url = "http://i.ytimg.com/vi/" + videoId + "/mqdefault.jpg";
+        Glide.with(view.getContext()).load(url).into(view);
+    }
+
+    @BindingAdapter("bind:created_at")
+    public static void setCreatedAt(TextView view, String date) {
+        view.setText("created at " + date);
+    }
+
 }
