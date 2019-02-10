@@ -21,28 +21,12 @@ public class ScoreListViewModel extends ViewModel {
     public MutableLiveData<List<Score>> scoreList = new MutableLiveData<>();
     public ObservableField<Boolean> isLoading = new ObservableField<>(true);
     public ObservableField<Boolean> isError = new ObservableField<>(false);
+    private ScoreService service;
 
     public ScoreListViewModel() {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ScoreService.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-        ScoreService service = retrofit.create(ScoreService.class);
-        service.getScoreList().enqueue(new Callback<ScoreList>() {
-            @Override
-            public void onResponse(Call<ScoreList> call, Response<ScoreList> response) {
-                isLoading.set(false);
-                if (!response.isSuccessful()) {
-                    isError.set(true);
-                    return;
-                }
-                scoreList.postValue(response.body().getData());
-            }
-
-            @Override
-            public void onFailure(Call<ScoreList> call, Throwable throwable) {
-                isLoading.set(false);
-                isError.set(true);
-            }
-
-        });
+        service = retrofit.create(ScoreService.class);
+        fetchScoreList(1);
     }
 
     @BindingAdapter("bind:youtube_image")
@@ -54,6 +38,37 @@ public class ScoreListViewModel extends ViewModel {
     @BindingAdapter("bind:created_at")
     public static void setCreatedAt(TextView view, String date) {
         view.setText("created at " + date);
+    }
+
+    public void fetchScoreList(int page) {
+        isLoading.set(true);
+        isError.set(false);
+
+        service.getScoreList(page, null).enqueue(new Callback<ScoreList>() {
+            @Override
+            public void onResponse(Call<ScoreList> call, Response<ScoreList> response) {
+                isLoading.set(false);
+                if (!response.isSuccessful()) {
+                    isError.set(true);
+                    return;
+                }
+
+                List<Score> result = response.body().getData();
+                if (scoreList.getValue() == null) {
+                    scoreList.postValue(result);
+                    return;
+                }
+                List<Score> value = scoreList.getValue();
+                value.addAll(result);
+                scoreList.postValue(value);
+            }
+
+            @Override
+            public void onFailure(Call<ScoreList> call, Throwable throwable) {
+                isLoading.set(false);
+                isError.set(true);
+            }
+        });
     }
 
 }
