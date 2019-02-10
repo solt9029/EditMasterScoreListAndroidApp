@@ -33,7 +33,7 @@ public class ScoreListViewModel extends ViewModel {
                     isError.set(true);
                     return;
                 }
-                scoreList.setValue(response.body().getData());
+                scoreList.postValue(response.body().getData());
             }
 
             @Override
