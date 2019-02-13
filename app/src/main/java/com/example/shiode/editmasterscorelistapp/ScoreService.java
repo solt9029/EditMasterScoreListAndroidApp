@@ -1,5 +1,9 @@
 package com.example.shiode.editmasterscorelistapp;
 
+import android.support.annotation.Nullable;
+
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -13,5 +17,8 @@ interface ScoreService {
 
     @GET("scores/{id}")
     Call<Score> getScore(@Path("id") Integer id);
+
+    @GET("scores/timeline")
+    Call<List<Score>>  getScoreTimeline(@Query("count") Integer count, @Query("max_id") Integer maxId, @Query("since_id") Integer sinceId);
 
 }

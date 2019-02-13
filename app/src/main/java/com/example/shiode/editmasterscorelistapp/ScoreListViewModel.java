@@ -4,6 +4,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableField;
+import android.support.annotation.Nullable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,7 +27,7 @@ public class ScoreListViewModel extends ViewModel {
     public ScoreListViewModel() {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ScoreService.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         service = retrofit.create(ScoreService.class);
-        fetchScoreList(1);
+        fetchScoreTimeline(null);
     }
 
     @BindingAdapter("bind:youtube_image")
@@ -40,20 +41,20 @@ public class ScoreListViewModel extends ViewModel {
         view.setText("created at " + date);
     }
 
-    public void fetchScoreList(int page) {
+    public void fetchScoreTimeline(Integer maxId) {
         isLoading.set(true);
         isError.set(false);
 
-        service.getScoreList(page, null).enqueue(new Callback<ScoreList>() {
+        service.getScoreTimeline(null, maxId, null).enqueue(new Callback<List<Score>>() {
             @Override
-            public void onResponse(Call<ScoreList> call, Response<ScoreList> response) {
+            public void onResponse(Call<List<Score>> call, Response<List<Score>> response) {
                 isLoading.set(false);
                 if (!response.isSuccessful()) {
                     isError.set(true);
                     return;
                 }
 
-                List<Score> result = response.body().getData();
+                List<Score> result = response.body();
                 if (scoreList.getValue() == null) {
                     scoreList.postValue(result);
                     return;
@@ -64,7 +65,7 @@ public class ScoreListViewModel extends ViewModel {
             }
 
             @Override
-            public void onFailure(Call<ScoreList> call, Throwable throwable) {
+            public void onFailure(Call<List<Score>> call, Throwable throwable) {
                 isLoading.set(false);
                 isError.set(true);
             }
