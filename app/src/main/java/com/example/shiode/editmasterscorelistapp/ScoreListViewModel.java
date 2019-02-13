@@ -4,7 +4,6 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableField;
-import android.support.annotation.Nullable;
 import android.widget.ImageView;
 import android.widget.TextView;
 

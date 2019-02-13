@@ -2,7 +2,6 @@ package com.example.shiode.editmasterscorelistapp;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
 

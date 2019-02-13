@@ -19,39 +19,9 @@ public class ScoreListAdapter extends RecyclerView.Adapter<ScoreItemViewHolder> 
             notifyItemRangeInserted(0, list.size());
             return;
         }
-        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtilCallback(this.list, list));
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new ScoreListDiffUtilCallback(this.list, list));
         this.list = list;
         result.dispatchUpdatesTo(this);
-    }
-
-    public class DiffUtilCallback extends DiffUtil.Callback {
-        public List<Score> oldList;
-        public List<Score> newList;
-
-        public DiffUtilCallback(List<Score> oldList, List<Score> newList) {
-            this.oldList = oldList;
-            this.newList = newList;
-        }
-
-        @Override
-        public int getOldListSize() {
-            return oldList.size();
-        }
-
-        @Override
-        public int getNewListSize() {
-            return newList.size();
-        }
-
-        @Override
-        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldList.get(oldItemPosition).getId() == newList.get(newItemPosition).getId();
-        }
-
-        @Override
-        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            return oldList.get(oldItemPosition).equals(newList.get(newItemPosition));
-        }
     }
 
     @Override
