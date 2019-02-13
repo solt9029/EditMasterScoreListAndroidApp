@@ -27,8 +27,15 @@ public class ScoreListViewModel extends ViewModel {
     public ScoreListViewModel() {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ScoreService.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         service = retrofit.create(ScoreService.class);
-        fetchScoreTimeline(null);
+        fetchScoreTimeline();
     }
+
+//    public int getScoreListSize() {
+//        if (scoreList.getValue() == null) {
+//            return 0;
+//        }
+//        return scoreList.getValue().size();
+//    }
 
     @BindingAdapter("bind:youtube_image")
     public static void setYoutubeImage(ImageView view, String videoId) {
@@ -41,9 +48,15 @@ public class ScoreListViewModel extends ViewModel {
         view.setText("created at " + date);
     }
 
-    public void fetchScoreTimeline(Integer maxId) {
+    public void fetchScoreTimeline() {
         isLoading.set(true);
         isError.set(false);
+
+        Integer maxId = null;
+        if (scoreList.getValue() != null) {
+            List<Score> list = scoreList.getValue();
+            maxId = list.get(list.size() - 1).getId() - 1;
+        }
 
         service.getScoreTimeline(null, maxId, null).enqueue(new Callback<List<Score>>() {
             @Override

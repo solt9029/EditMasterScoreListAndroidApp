@@ -4,12 +4,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-public class EndlessScrollListener extends RecyclerView.OnScrollListener {
+public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
 
     int firstVisibleItem, visibleItemCount, totalItemCount;
     private int previousTotal = 0;
-    private boolean loading = true;
-    private int current_page = 1;
+    private boolean isLoading = true;
 
     private LinearLayoutManager manager;
 
@@ -26,25 +25,17 @@ public class EndlessScrollListener extends RecyclerView.OnScrollListener {
         firstVisibleItem = manager.findFirstVisibleItemPosition();
         int visibleThreshold = 1;
 
-        if ((totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
-            Log.d("shiode", "scrolled!");
+        if (isLoading) {
+            if (totalItemCount > previousTotal) {
+                isLoading = false;
+                previousTotal = totalItemCount;
+            }
         }
-//
-//        if (loading) {
-//            if (totalItemCount > previousTotal) {
-//                loading = false;
-//                previousTotal = totalItemCount;
-//            }
-//        }
-//
-//        if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
-//            current_page++;
-//
-//            onLoadMore(current_page);
-//
-//            loading = true;
-//        }
-    }
+        if (!isLoading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+            onLoadMore();
+            isLoading = true;
+        }
+}
 
-//    public abstract void onLoadMore(int current_page);
+    public abstract void onLoadMore();
 }

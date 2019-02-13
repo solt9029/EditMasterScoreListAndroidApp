@@ -33,7 +33,12 @@ public class ScoreListActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = binding.recyclerView;
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager));
+        recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore() {
+                viewModel.fetchScoreTimeline();
+            }
+        });
 
         viewModel.scoreList.observe(this, new Observer<List<Score>>() {
             @Override
