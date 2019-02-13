@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -29,13 +30,6 @@ public class ScoreListViewModel extends ViewModel {
         service = retrofit.create(ScoreService.class);
         fetchScoreTimeline();
     }
-
-//    public int getScoreListSize() {
-//        if (scoreList.getValue() == null) {
-//            return 0;
-//        }
-//        return scoreList.getValue().size();
-//    }
 
     @BindingAdapter("bind:youtube_image")
     public static void setYoutubeImage(ImageView view, String videoId) {
@@ -72,9 +66,12 @@ public class ScoreListViewModel extends ViewModel {
                     scoreList.postValue(result);
                     return;
                 }
-                List<Score> value = scoreList.getValue();
-                value.addAll(result);
-                scoreList.postValue(value);
+
+                // deep copy!
+                List<Score> newList = new ArrayList<>();
+                newList.addAll(scoreList.getValue());
+                newList.addAll(result);
+                scoreList.postValue(newList);
             }
 
             @Override
@@ -84,5 +81,4 @@ public class ScoreListViewModel extends ViewModel {
             }
         });
     }
-
 }
