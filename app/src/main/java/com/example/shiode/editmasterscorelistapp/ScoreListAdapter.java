@@ -16,7 +16,7 @@ public class ScoreListAdapter extends RecyclerView.Adapter<ScoreItemViewHolder> 
     public void setList(List<Score> list) {
         if (this.list == null) {
             this.list = list;
-            notifyItemRangeInserted(0, list.size());
+            notifyDataSetChanged();
             return;
         }
         DiffUtil.DiffResult result = DiffUtil.calculateDiff(new ScoreListDiffUtilCallback(this.list, list));

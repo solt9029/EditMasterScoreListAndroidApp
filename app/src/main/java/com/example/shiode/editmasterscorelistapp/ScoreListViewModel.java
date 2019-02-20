@@ -20,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ScoreListViewModel extends ViewModel {
     public MutableLiveData<List<Score>> scoreList = new MutableLiveData<>();
-    public ObservableField<Boolean> isLoading = new ObservableField<>(true);
+    public ObservableField<Boolean> isLoading = new ObservableField<>(false);
     public ObservableField<Boolean> isError = new ObservableField<>(false);
     private ScoreService service;
 
@@ -41,7 +41,16 @@ public class ScoreListViewModel extends ViewModel {
         view.setText("created at " + date);
     }
 
+    public void onRefresh() {
+        scoreList.setValue(null);
+        fetchScoreTimeline();
+    }
+
     public void fetchScoreTimeline() {
+        if (isLoading.get()) {
+            return;
+        }
+
         isLoading.set(true);
         isError.set(false);
 

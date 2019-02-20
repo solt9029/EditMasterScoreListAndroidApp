@@ -15,11 +15,17 @@ class ScoreListDiffUtilCallback extends DiffUtil.Callback {
 
     @Override
     public int getOldListSize() {
+        if (oldList == null) {
+            return 0;
+        }
         return oldList.size();
     }
 
     @Override
     public int getNewListSize() {
+        if (newList == null) {
+            return 0;
+        }
         return newList.size();
     }
 
