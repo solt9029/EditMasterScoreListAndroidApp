@@ -1,4 +1,4 @@
-package com.example.shiode.editmasterscorelistapp;
+package com.example.shiode.editmasterscorelistapp.viewmodel;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.shiode.editmasterscorelistapp.service.ScoreService;
+import com.example.shiode.editmasterscorelistapp.model.Score;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,8 @@
-package com.example.shiode.editmasterscorelistapp;
+package com.example.shiode.editmasterscorelistapp.view;
 
 import android.support.v7.util.DiffUtil;
+
+import com.example.shiode.editmasterscorelistapp.model.Score;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.example.shiode.editmasterscorelistapp;
+package com.example.shiode.editmasterscorelistapp.view;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;

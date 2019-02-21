@@ -1,4 +1,4 @@
-package com.example.shiode.editmasterscorelistapp;
+package com.example.shiode.editmasterscorelistapp.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
