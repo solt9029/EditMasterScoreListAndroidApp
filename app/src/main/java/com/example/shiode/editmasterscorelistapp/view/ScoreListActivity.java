@@ -38,7 +38,7 @@ public class ScoreListActivity extends AppCompatActivity {
         recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore() {
-                viewModel.fetchScoreTimeline();
+                viewModel.loadMoreScoreTimeline();
             }
         });
 
@@ -55,7 +55,7 @@ public class ScoreListActivity extends AppCompatActivity {
             public void onChanged(@Nullable Boolean isLoading) {
                 List<Score> scoreList = viewModel.scoreList.getValue();
                 controller.setData(scoreList, isLoading);
-                if (!isLoading) {
+                if (isLoading != null && !isLoading) {
                     binding.swipeRefreshLayout.setRefreshing(false);
                 }
             }

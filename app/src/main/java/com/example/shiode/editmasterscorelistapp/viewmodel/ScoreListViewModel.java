@@ -24,26 +24,33 @@ public class ScoreListViewModel extends ViewModel {
         isLoading.setValue(false);
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ScoreService.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         service = retrofit.create(ScoreService.class);
-        fetchScoreTimeline();
+        loadScoreTimeline();
     }
 
     public void onRefresh() {
         scoreList.setValue(null);
-        fetchScoreTimeline();
+        loadScoreTimeline();
     }
 
-    public void fetchScoreTimeline() {
-        if (isLoading.getValue()) {
+    public void loadMoreScoreTimeline() {
+        Integer maxId = null;
+        List<Score> list = scoreList.getValue();
+        if (list != null) {
+            maxId = list.get(list.size() - 1).getId() - 1;
+        }
+        loadScoreTimeline(maxId);
+    }
+
+    public void loadScoreTimeline() {
+        loadScoreTimeline(null);
+    }
+
+    public void loadScoreTimeline(Integer maxId) {
+        if (isLoading.getValue() != null && isLoading.getValue()) {
             return;
         }
 
         isLoading.setValue(true);
-
-        Integer maxId = null;
-        if (scoreList.getValue() != null) {
-            List<Score> list = scoreList.getValue();
-            maxId = list.get(list.size() - 1).getId() - 1;
-        }
 
         service.getScoreTimeline(null, maxId, null).enqueue(new Callback<List<Score>>() {
             @Override
@@ -54,16 +61,14 @@ public class ScoreListViewModel extends ViewModel {
                 }
 
                 List<Score> result = response.body();
-                if (scoreList.getValue() == null) {
-                    scoreList.postValue(result);
-                    return;
-                }
-
-                // deep copy!
                 List<Score> newList = new ArrayList<>();
-                newList.addAll(scoreList.getValue());
-                newList.addAll(result);
-                scoreList.postValue(newList);
+                if (scoreList.getValue() != null) {
+                    newList.addAll(scoreList.getValue());
+                }
+                if (result != null) {
+                    newList.addAll(result);
+                }
+                scoreList.setValue(newList);
             }
 
             @Override
