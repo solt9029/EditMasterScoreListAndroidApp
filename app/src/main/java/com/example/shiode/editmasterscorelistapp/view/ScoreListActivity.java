@@ -55,6 +55,9 @@ public class ScoreListActivity extends AppCompatActivity {
             public void onChanged(@Nullable Boolean isLoading) {
                 List<Score> scoreList = viewModel.scoreList.getValue();
                 controller.setData(scoreList, isLoading);
+                if (!isLoading) {
+                    binding.swipeRefreshLayout.setRefreshing(false);
+                }
             }
         });
     }
