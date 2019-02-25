@@ -20,7 +20,7 @@ public class ScoreListViewModel extends ViewModel {
     public MutableLiveData<List<Score>> scoreList = new MutableLiveData<>();
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     @Inject
-    public ScoreService service;
+    ScoreService service;
 
     public ScoreListViewModel() {
         AppApplication.getApplication().getComponent().inject(this);
@@ -42,11 +42,11 @@ public class ScoreListViewModel extends ViewModel {
         loadScoreTimeline(maxId);
     }
 
-    public void loadScoreTimeline() {
+    private void loadScoreTimeline() {
         loadScoreTimeline(null);
     }
 
-    public void loadScoreTimeline(Integer maxId) {
+    private void loadScoreTimeline(Integer maxId) {
         if (isLoading.getValue() != null && isLoading.getValue()) {
             return;
         }

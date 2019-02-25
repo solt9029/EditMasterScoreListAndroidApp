@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
     private LinearLayoutManager manager;
 
-    public EndlessScrollListener(LinearLayoutManager manager) {
+    EndlessScrollListener(LinearLayoutManager manager) {
         this.manager = manager;
     }
 

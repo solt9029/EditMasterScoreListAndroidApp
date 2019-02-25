@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:bind="http://schemas.android.com/tools">
+<layout>
 
     <data>
 
@@ -41,7 +41,7 @@
                         android:id="@+id/youtubeImage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        bind:youtube_image="@{score.videoId}" />
+                        youtube_image="@{score.videoId}" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -100,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:paddingLeft="16dp"
                         android:paddingRight="16dp"
-                        bind:created_at="@{score.createdAt}"
+                        created_at="@{score.createdAt}"
                         android:maxLines="1"
                         android:gravity="right"
                         android:textSize="10dp"
