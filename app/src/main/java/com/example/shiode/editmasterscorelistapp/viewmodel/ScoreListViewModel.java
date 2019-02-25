@@ -3,27 +3,28 @@ package com.example.shiode.editmasterscorelistapp.viewmodel;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
+import com.example.shiode.editmasterscorelistapp.di.AppApplication;
 import com.example.shiode.editmasterscorelistapp.model.Score;
 import com.example.shiode.editmasterscorelistapp.service.ScoreService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ScoreListViewModel extends ViewModel {
     public MutableLiveData<List<Score>> scoreList = new MutableLiveData<>();
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
-    private ScoreService service;
+    @Inject
+    public ScoreService service;
 
     public ScoreListViewModel() {
+        AppApplication.getApplication().getComponent().inject(this);
         isLoading.setValue(false);
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(ScoreService.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
-        service = retrofit.create(ScoreService.class);
         loadScoreTimeline();
     }
 
