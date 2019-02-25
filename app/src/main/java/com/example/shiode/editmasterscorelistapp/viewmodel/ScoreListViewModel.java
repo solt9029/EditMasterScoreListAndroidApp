@@ -2,13 +2,9 @@ package com.example.shiode.editmasterscorelistapp.viewmodel;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.databinding.BindingAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.example.shiode.editmasterscorelistapp.service.ScoreService;
 import com.example.shiode.editmasterscorelistapp.model.Score;
+import com.example.shiode.editmasterscorelistapp.service.ScoreService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +18,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ScoreListViewModel extends ViewModel {
     public MutableLiveData<List<Score>> scoreList = new MutableLiveData<>();
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
-    public MutableLiveData<Boolean> isError = new MutableLiveData<>();
     private ScoreService service;
 
     public ScoreListViewModel() {
         isLoading.setValue(false);
-        isError.setValue(false);
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ScoreService.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         service = retrofit.create(ScoreService.class);
         fetchScoreTimeline();
@@ -44,7 +38,6 @@ public class ScoreListViewModel extends ViewModel {
         }
 
         isLoading.setValue(true);
-        isError.setValue(false);
 
         Integer maxId = null;
         if (scoreList.getValue() != null) {
@@ -57,7 +50,6 @@ public class ScoreListViewModel extends ViewModel {
             public void onResponse(Call<List<Score>> call, Response<List<Score>> response) {
                 isLoading.setValue(false);
                 if (!response.isSuccessful()) {
-                    isError.setValue(true);
                     return;
                 }
 
@@ -77,7 +69,6 @@ public class ScoreListViewModel extends ViewModel {
             @Override
             public void onFailure(Call<List<Score>> call, Throwable throwable) {
                 isLoading.setValue(false);
-                isError.setValue(true);
             }
         });
     }
