@@ -19,7 +19,7 @@ import java.util.List;
 public class ScoreListActivity extends AppCompatActivity {
     private ActivityScoreListBinding binding;
     private ScoreListViewModel viewModel;
-    private ScoreListAdapter adapter;
+    private ScoreListController controller = new ScoreListController();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +28,7 @@ public class ScoreListActivity extends AppCompatActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_score_list);
 
-        adapter = new ScoreListAdapter();
-        binding.setAdapter(adapter);
+        binding.setAdapter(controller.getAdapter());
 
         viewModel = ViewModelProviders.of(this).get(ScoreListViewModel.class);
         binding.setViewModel(viewModel);
@@ -46,7 +45,16 @@ public class ScoreListActivity extends AppCompatActivity {
         viewModel.scoreList.observe(this, new Observer<List<Score>>() {
             @Override
             public void onChanged(@Nullable List<Score> scoreList) {
-                adapter.setList(scoreList);
+                Boolean isLoading = viewModel.isLoading.getValue();
+                controller.setData(scoreList, isLoading);
+            }
+        });
+
+        viewModel.isLoading.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean isLoading) {
+                List<Score> scoreList = viewModel.scoreList.getValue();
+                controller.setData(scoreList, isLoading);
             }
         });
     }

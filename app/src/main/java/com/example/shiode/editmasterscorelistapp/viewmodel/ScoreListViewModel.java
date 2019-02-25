@@ -3,7 +3,6 @@ package com.example.shiode.editmasterscorelistapp.viewmodel;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.BindingAdapter;
-import android.databinding.ObservableField;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,25 +21,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ScoreListViewModel extends ViewModel {
     public MutableLiveData<List<Score>> scoreList = new MutableLiveData<>();
-    public ObservableField<Boolean> isLoading = new ObservableField<>(false);
-    public ObservableField<Boolean> isError = new ObservableField<>(false);
+    public MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+    public MutableLiveData<Boolean> isError = new MutableLiveData<>();
     private ScoreService service;
 
     public ScoreListViewModel() {
+        isLoading.setValue(false);
+        isError.setValue(false);
         Retrofit retrofit = new Retrofit.Builder().baseUrl(ScoreService.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build();
         service = retrofit.create(ScoreService.class);
         fetchScoreTimeline();
-    }
-
-    @BindingAdapter("bind:youtube_image")
-    public static void setYoutubeImage(ImageView view, String videoId) {
-        String url = "http://i.ytimg.com/vi/" + videoId + "/mqdefault.jpg";
-        Glide.with(view.getContext()).load(url).into(view);
-    }
-
-    @BindingAdapter("bind:created_at")
-    public static void setCreatedAt(TextView view, String date) {
-        view.setText("created at " + date);
     }
 
     public void onRefresh() {
@@ -49,12 +39,12 @@ public class ScoreListViewModel extends ViewModel {
     }
 
     public void fetchScoreTimeline() {
-        if (isLoading.get()) {
+        if (isLoading.getValue()) {
             return;
         }
 
-        isLoading.set(true);
-        isError.set(false);
+        isLoading.setValue(true);
+        isError.setValue(false);
 
         Integer maxId = null;
         if (scoreList.getValue() != null) {
@@ -65,9 +55,9 @@ public class ScoreListViewModel extends ViewModel {
         service.getScoreTimeline(null, maxId, null).enqueue(new Callback<List<Score>>() {
             @Override
             public void onResponse(Call<List<Score>> call, Response<List<Score>> response) {
-                isLoading.set(false);
+                isLoading.setValue(false);
                 if (!response.isSuccessful()) {
-                    isError.set(true);
+                    isError.setValue(true);
                     return;
                 }
 
@@ -86,8 +76,8 @@ public class ScoreListViewModel extends ViewModel {
 
             @Override
             public void onFailure(Call<List<Score>> call, Throwable throwable) {
-                isLoading.set(false);
-                isError.set(true);
+                isLoading.setValue(false);
+                isError.setValue(true);
             }
         });
     }
