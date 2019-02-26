@@ -42,22 +42,16 @@ public class ScoreListActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.scoreList.observe(this, new Observer<List<Score>>() {
-            @Override
-            public void onChanged(@Nullable List<Score> scoreList) {
-                Boolean isLoading = viewModel.isLoading.getValue();
-                controller.setData(scoreList, isLoading);
-            }
+        viewModel.scoreList.observe(this, scoreList -> {
+            Boolean isLoading = viewModel.isLoading.getValue();
+            controller.setData(scoreList, isLoading);
         });
 
-        viewModel.isLoading.observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(@Nullable Boolean isLoading) {
-                List<Score> scoreList = viewModel.scoreList.getValue();
-                controller.setData(scoreList, isLoading);
-                if (isLoading != null && !isLoading) {
-                    binding.swipeRefreshLayout.setRefreshing(false);
-                }
+        viewModel.isLoading.observe(this, isLoading -> {
+            List<Score> scoreList = viewModel.scoreList.getValue();
+            controller.setData(scoreList, isLoading);
+            if (isLoading != null && !isLoading) {
+                binding.swipeRefreshLayout.setRefreshing(false);
             }
         });
     }
