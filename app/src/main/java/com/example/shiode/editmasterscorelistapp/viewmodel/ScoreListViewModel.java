@@ -2,6 +2,7 @@ package com.example.shiode.editmasterscorelistapp.viewmodel;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.util.Log;
 
 import com.example.shiode.editmasterscorelistapp.di.AppApplication;
 import com.example.shiode.editmasterscorelistapp.model.Score;
@@ -12,25 +13,27 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class ScoreListViewModel extends ViewModel {
     public MutableLiveData<List<Score>> scoreList = new MutableLiveData<>();
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+    public CompositeDisposable compositeDisposable = new CompositeDisposable();
     @Inject
     ScoreService service;
 
     public ScoreListViewModel() {
         AppApplication.getApplication().getComponent().inject(this);
         isLoading.setValue(false);
-        loadScoreTimeline();
+        loadScoreTimeline(null);
     }
 
     public void onRefresh() {
         scoreList.setValue(null);
-        loadScoreTimeline();
+        loadScoreTimeline(null);
     }
 
     public void loadMoreScoreTimeline() {
@@ -42,40 +45,32 @@ public class ScoreListViewModel extends ViewModel {
         loadScoreTimeline(maxId);
     }
 
-    private void loadScoreTimeline() {
-        loadScoreTimeline(null);
-    }
-
     private void loadScoreTimeline(Integer maxId) {
         if (isLoading.getValue() != null && isLoading.getValue()) {
             return;
         }
-
         isLoading.setValue(true);
 
-        service.getScoreTimeline(null, maxId, null).enqueue(new Callback<List<Score>>() {
-            @Override
-            public void onResponse(Call<List<Score>> call, Response<List<Score>> response) {
-                isLoading.setValue(false);
-                if (!response.isSuccessful()) {
-                    return;
-                }
+        Disposable disposable = service.getScoreTimeline(null, maxId, null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        result -> {
+                            isLoading.setValue(false);
+                            List<Score> newList = new ArrayList<>();
+                            if (scoreList.getValue() != null) {
+                                newList.addAll(scoreList.getValue());
+                            }
+                            newList.addAll(result);
+                            scoreList.setValue(newList);
+                        },
+                        throwable -> isLoading.setValue(false)
+                );
+        compositeDisposable.add(disposable);
+    }
 
-                List<Score> result = response.body();
-                List<Score> newList = new ArrayList<>();
-                if (scoreList.getValue() != null) {
-                    newList.addAll(scoreList.getValue());
-                }
-                if (result != null) {
-                    newList.addAll(result);
-                }
-                scoreList.setValue(newList);
-            }
-
-            @Override
-            public void onFailure(Call<List<Score>> call, Throwable throwable) {
-                isLoading.setValue(false);
-            }
-        });
+    @Override
+    public void onCleared() {
+        compositeDisposable.clear();
     }
 }
