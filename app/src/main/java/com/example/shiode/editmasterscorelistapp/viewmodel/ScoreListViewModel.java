@@ -2,6 +2,7 @@ package com.example.shiode.editmasterscorelistapp.viewmodel;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.databinding.ObservableField;
 
 import com.example.shiode.editmasterscorelistapp.di.AppApplication;
 import com.example.shiode.editmasterscorelistapp.model.Score;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -20,58 +22,89 @@ import io.reactivex.schedulers.Schedulers;
 public class ScoreListViewModel extends ViewModel {
     public MutableLiveData<List<Score>> scoreList = new MutableLiveData<>();
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
-    public CompositeDisposable compositeDisposable = new CompositeDisposable();
+    public ObservableField<Boolean> isRefreshing = new ObservableField<>();
     @Inject
     ScoreService service;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    public ScoreListViewModel() {
+    ScoreListViewModel() {
         AppApplication.getApplication().getComponent().inject(this);
-        isLoading.setValue(false);
-        loadScoreTimeline(null);
-    }
+        isRefreshing.set(false);
 
-    public void onRefresh() {
-        scoreList.setValue(null);
-        loadScoreTimeline(null);
-    }
-
-    public void loadMoreScoreTimeline() {
-        Integer maxId = null;
-        List<Score> list = scoreList.getValue();
-        if (list != null) {
-            maxId = list.get(list.size() - 1).getId() - 1;
-        }
-        loadScoreTimeline(maxId);
-    }
-
-    private void loadScoreTimeline(Integer maxId) {
-        if (isLoading.getValue() != null && isLoading.getValue()) {
-            return;
-        }
         isLoading.setValue(true);
-
-        Disposable disposable = service.getScoreTimeline(null, maxId, null)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        Disposable disposable = fetchScoreTimeline()
                 .subscribe(
-                        this::onSuccess,
+                        result -> {
+                            isLoading.setValue(false);
+                            scoreList.setValue(result);
+                        },
                         throwable -> isLoading.setValue(false)
                 );
         compositeDisposable.add(disposable);
     }
 
-    private void onSuccess(List<Score> result) {
-        isLoading.setValue(false);
-        List<Score> newList = new ArrayList<>();
-        if (scoreList.getValue() != null) {
-            newList.addAll(scoreList.getValue());
-        }
-        newList.addAll(result);
-        scoreList.setValue(newList);
-    }
-
     @Override
     public void onCleared() {
         compositeDisposable.clear();
+    }
+
+    public void onRefresh() {
+        if (isLoading.getValue() != null && isLoading.getValue()) {
+            return;
+        }
+
+        isRefreshing.set(true);
+        isLoading.setValue(true);
+        Disposable disposable = fetchScoreTimeline()
+                .subscribe(
+                        result -> {
+                            isRefreshing.set(false);
+                            isLoading.setValue(false);
+                            scoreList.setValue(result);
+                        },
+                        throwable -> isLoading.setValue(false)
+                );
+        compositeDisposable.add(disposable);
+    }
+
+    public void loadMoreScoreTimeline() {
+        if (isLoading.getValue() != null && isLoading.getValue()) {
+            return;
+        }
+
+        isLoading.setValue(true);
+        Disposable disposable = fetchScoreTimeline(getMaxId())
+                .subscribe(
+                        result -> {
+                            isLoading.setValue(false);
+                            List<Score> newList = new ArrayList<>();
+                            if (scoreList.getValue() != null) {
+                                newList.addAll(scoreList.getValue());
+                            }
+                            newList.addAll(result);
+                            scoreList.setValue(newList);
+                        },
+                        throwable -> isLoading.setValue(false)
+                );
+        compositeDisposable.add(disposable);
+    }
+
+    private Integer getMaxId() {
+        Integer maxId = null;
+        List<Score> list = scoreList.getValue();
+        if (list != null) {
+            maxId = list.get(list.size() - 1).getId() - 1;
+        }
+        return maxId;
+    }
+
+    private Single<List<Score>> fetchScoreTimeline() {
+        return fetchScoreTimeline(null);
+    }
+
+    private Single<List<Score>> fetchScoreTimeline(Integer maxId) {
+        return service.getScoreTimeline(null, maxId, null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }

@@ -1,10 +1,8 @@
 package com.example.shiode.editmasterscorelistapp.view;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,15 +42,14 @@ public class ScoreListActivity extends AppCompatActivity {
 
         viewModel.scoreList.observe(this, scoreList -> {
             Boolean isLoading = viewModel.isLoading.getValue();
-            controller.setData(scoreList, isLoading);
+            Boolean isRefreshing = viewModel.isRefreshing.get();
+            controller.setData(scoreList, isLoading, isRefreshing);
         });
 
         viewModel.isLoading.observe(this, isLoading -> {
             List<Score> scoreList = viewModel.scoreList.getValue();
-            controller.setData(scoreList, isLoading);
-            if (isLoading != null && !isLoading) {
-                binding.swipeRefreshLayout.setRefreshing(false);
-            }
+            Boolean isRefreshing = viewModel.isRefreshing.get();
+            controller.setData(scoreList, isLoading, isRefreshing);
         });
     }
 }
