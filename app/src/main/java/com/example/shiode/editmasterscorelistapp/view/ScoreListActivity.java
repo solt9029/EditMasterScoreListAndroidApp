@@ -42,13 +42,13 @@ public class ScoreListActivity extends AppCompatActivity {
 
         viewModel.scoreList.observe(this, scoreList -> {
             Boolean isLoading = viewModel.isLoading.getValue();
-            Boolean isRefreshing = viewModel.isRefreshing.get();
+            boolean isRefreshing = viewModel.isRefreshing.get();
             controller.setData(scoreList, isLoading, isRefreshing);
         });
 
         viewModel.isLoading.observe(this, isLoading -> {
             List<Score> scoreList = viewModel.scoreList.getValue();
-            Boolean isRefreshing = viewModel.isRefreshing.get();
+            boolean isRefreshing = viewModel.isRefreshing.get();
             controller.setData(scoreList, isLoading, isRefreshing);
         });
     }

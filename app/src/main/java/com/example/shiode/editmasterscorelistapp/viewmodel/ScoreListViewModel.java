@@ -2,7 +2,7 @@ package com.example.shiode.editmasterscorelistapp.viewmodel;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.databinding.ObservableField;
+import android.databinding.ObservableBoolean;
 
 import com.example.shiode.editmasterscorelistapp.di.AppApplication;
 import com.example.shiode.editmasterscorelistapp.model.Score;
@@ -22,7 +22,7 @@ import io.reactivex.schedulers.Schedulers;
 public class ScoreListViewModel extends ViewModel {
     public MutableLiveData<List<Score>> scoreList = new MutableLiveData<>();
     public MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
-    public ObservableField<Boolean> isRefreshing = new ObservableField<>();
+    public ObservableBoolean isRefreshing = new ObservableBoolean(false);
     @Inject
     ScoreService service;
     @Inject
@@ -30,8 +30,6 @@ public class ScoreListViewModel extends ViewModel {
 
     ScoreListViewModel() {
         AppApplication.getApplication().getComponent().inject(this);
-
-        isRefreshing.set(false);
 
         isLoading.setValue(true);
         Disposable disposable = fetchScoreTimeline()
