@@ -25,7 +25,8 @@ public class ScoreListViewModel extends ViewModel {
     public ObservableField<Boolean> isRefreshing = new ObservableField<>();
     @Inject
     ScoreService service;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    @Inject
+    CompositeDisposable compositeDisposable;
 
     ScoreListViewModel() {
         AppApplication.getApplication().getComponent().inject(this);
