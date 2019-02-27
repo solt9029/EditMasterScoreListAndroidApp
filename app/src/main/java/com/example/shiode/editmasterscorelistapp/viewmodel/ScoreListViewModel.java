@@ -64,7 +64,10 @@ public class ScoreListViewModel extends ViewModel {
                             isLoading.setValue(false);
                             scoreList.setValue(result);
                         },
-                        throwable -> isLoading.setValue(false)
+                        throwable -> {
+                            isRefreshing.set(false);
+                            isLoading.setValue(false);
+                        }
                 );
         compositeDisposable.add(disposable);
     }
