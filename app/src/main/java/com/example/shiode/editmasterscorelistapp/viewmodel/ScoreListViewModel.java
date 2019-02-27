@@ -2,7 +2,6 @@ package com.example.shiode.editmasterscorelistapp.viewmodel;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.util.Log;
 
 import com.example.shiode.editmasterscorelistapp.di.AppApplication;
 import com.example.shiode.editmasterscorelistapp.model.Score;
@@ -55,18 +54,20 @@ public class ScoreListViewModel extends ViewModel {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        result -> {
-                            isLoading.setValue(false);
-                            List<Score> newList = new ArrayList<>();
-                            if (scoreList.getValue() != null) {
-                                newList.addAll(scoreList.getValue());
-                            }
-                            newList.addAll(result);
-                            scoreList.setValue(newList);
-                        },
+                        this::onSuccess,
                         throwable -> isLoading.setValue(false)
                 );
         compositeDisposable.add(disposable);
+    }
+
+    private void onSuccess(List<Score> result) {
+        isLoading.setValue(false);
+        List<Score> newList = new ArrayList<>();
+        if (scoreList.getValue() != null) {
+            newList.addAll(scoreList.getValue());
+        }
+        newList.addAll(result);
+        scoreList.setValue(newList);
     }
 
     @Override
