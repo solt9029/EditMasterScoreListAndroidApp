@@ -30,6 +30,7 @@ public class ScoreListViewModel extends ViewModel {
 
     ScoreListViewModel() {
         AppApplication.getApplication().getComponent().inject(this);
+
         isRefreshing.set(false);
 
         isLoading.setValue(true);
@@ -68,7 +69,7 @@ public class ScoreListViewModel extends ViewModel {
         compositeDisposable.add(disposable);
     }
 
-    public void loadMoreScoreTimeline() {
+    public void loadMore() {
         if (isLoading.getValue() != null && isLoading.getValue()) {
             return;
         }

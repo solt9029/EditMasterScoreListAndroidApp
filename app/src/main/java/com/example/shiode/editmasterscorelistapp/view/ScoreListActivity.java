@@ -36,7 +36,7 @@ public class ScoreListActivity extends AppCompatActivity {
         recyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore() {
-                viewModel.loadMoreScoreTimeline();
+                viewModel.loadMore();
             }
         });
 
